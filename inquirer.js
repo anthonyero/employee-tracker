@@ -1,14 +1,45 @@
 const inquirer = require('inquirer');
 
+// Functions
 const validateNonEmpty = (promptName) => {
 	if (promptName) {
 		return true;
 	} else {
 		throw new Error(`Please select a ${promptName}`);
 	}
-}
+};
 
-const questions = [
+const viewDepartments = () => {
+
+};
+
+const viewRoles = () => {
+
+};
+
+const viewEmployees = () => {
+
+};
+
+const addDepartment = () => {
+
+};
+
+const addRole = () => {
+
+};
+
+const addEmployee = () => {
+
+};
+
+const updateEmployeeRole = () => {
+
+};
+
+
+// 
+const commandQuestion = [
 	{
 		type: "list",
 		message: "Please provide a command:",
@@ -26,21 +57,19 @@ const questions = [
 ];
 
 
-const runInquirer = () => {
+// Initialization function
+const runInquirer = (questionList) => {
 	inquirer
-	.prompt(questions)
+	.prompt(questionList)
 	.then((response) => {
 		console.log(response);
 	})
 
 }
 
-
-
+runInquirer(commandQuestion);
 
 module.exports = {
-	questions,
+	commandQuestion,
 	runInquirer
 }
-
-runInquirer();
