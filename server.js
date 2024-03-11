@@ -80,7 +80,6 @@ app.get('/api/employees', (req, res) => {
 // Add Department
 app.post('/api/add-department', (req, res) => {
 	const {name} = req.body;
-	console.log(name);
 
 	if (name) {
 		pool.query(`INSERT INTO department (name) VALUES ($1)`, [name], (err, { rows }) => {
@@ -97,6 +96,27 @@ app.post('/api/add-department', (req, res) => {
 		res.status(500).json('Error in adding department')
 	};
 });
+
+// Add Role
+app.post('/api/add-role', (req, res) => {
+	const {title, salary, department_id} = req.body;
+
+	if (title && salary && department_id) {
+		pool.query(`INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)`, [title, salary, department_id], (err, { rows }) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log('Added a new role')
+			res.json({
+				message: 'success',
+				data: 'A new role was added to the "role" table'
+			});
+		});
+	} else {
+		res.status(500).json('Error in adding role')
+	};
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
