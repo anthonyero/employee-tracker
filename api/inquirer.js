@@ -24,11 +24,21 @@ const validateNonEmpty = (promptName) => {
 
 const viewDepartments = () => {
 	console.log(`Made it to viewDepartments`);
+	/*
 	fetch('http://localhost:3001/api/departments', {
     	method: 'GET'
  	 })
 	   .then((res) => res.json())
-	   .then((data) => console.info(data));
+	   .then((data) => console.info(data)); */
+	const sql = `SELECT * FROM department`;
+
+  	pool.query(sql)
+  	//.then((response) => response)
+  	.then( ({rows}) => {
+  		console.table(rows);
+  		runInquirer(commandQuestion);
+  	});
+
 };
 
 const viewRoles = () => {
