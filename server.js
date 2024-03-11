@@ -118,34 +118,6 @@ app.post('/api/add-role', (req, res) => {
 });
 
 // Add employee
-// app.post('/api/add-employee', (req, res) => {
-// 	const {first_name, last_name, role_id, manager_id} = req.body;
-// 	const values = [first_name, last_name, role_id]
-// 	const sql = ``;
-
-// 	if (first_name && last_name && role_id ) { // manager_id can be null
-// 		if (manager_id === null) {
-// 			sql.concat(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, NULL)`); // if const declared here, inaccessible in query due to block scope
-// 		} else {
-// 			sql.concat(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`);
-// 			values.push(manager_id);  
-// 		};
-// 		console.log(sql);
-// 		pool.query(sql, values, (err, { rows }) => {
-// 			if (err) {
-// 				console.log(err);
-// 			}
-// 			console.log('Added a new employee')
-// 			res.json({
-// 				message: 'success',
-// 				data: 'A new employee was added to the "employee" table'
-// 			});
-// 		});
-// 	} else {
-// 		res.status(500).json('Error in adding employee')
-// 	};
-// });
-
 app.post('/api/add-employee', (req, res) => {
 	const {first_name, last_name, role_id, manager_id} = req.body;
 	const values = [first_name, last_name, role_id]
@@ -185,6 +157,25 @@ app.post('/api/add-employee', (req, res) => {
 	};
 });
 
+// Update an Employee's Role
+app.post('/api/update-employee-role', (req, res) => {
+	const {employee_id, role_id} = req.body;
+
+	if (employee_id && role_id) {
+		pool.query(`UPDATE employee SET role_id = $1 WHERE id = $2`, [role_id, employee_id], (err, {rows}) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log("Updated an employee's role")
+			res.json({
+				message: 'success',
+				data: "Updated an employee's role"
+			});
+		});
+	} else {
+		res.status(500).json("Error in updating an employee's role")
+	};
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
