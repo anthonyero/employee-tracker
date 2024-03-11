@@ -117,6 +117,74 @@ app.post('/api/add-role', (req, res) => {
 	};
 });
 
+// Add employee
+// app.post('/api/add-employee', (req, res) => {
+// 	const {first_name, last_name, role_id, manager_id} = req.body;
+// 	const values = [first_name, last_name, role_id]
+// 	const sql = ``;
+
+// 	if (first_name && last_name && role_id ) { // manager_id can be null
+// 		if (manager_id === null) {
+// 			sql.concat(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, NULL)`); // if const declared here, inaccessible in query due to block scope
+// 		} else {
+// 			sql.concat(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`);
+// 			values.push(manager_id);  
+// 		};
+// 		console.log(sql);
+// 		pool.query(sql, values, (err, { rows }) => {
+// 			if (err) {
+// 				console.log(err);
+// 			}
+// 			console.log('Added a new employee')
+// 			res.json({
+// 				message: 'success',
+// 				data: 'A new employee was added to the "employee" table'
+// 			});
+// 		});
+// 	} else {
+// 		res.status(500).json('Error in adding employee')
+// 	};
+// });
+
+app.post('/api/add-employee', (req, res) => {
+	const {first_name, last_name, role_id, manager_id} = req.body;
+	const values = [first_name, last_name, role_id]
+
+	if (first_name && last_name && role_id ) { // manager_id can be null
+		if (manager_id === null) {
+			const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, NULL)`; // if const declared here, inaccessible in query due to block scope
+			console.log(sql);
+			pool.query(sql, values, (err, { rows }) => {
+				if (err) {
+					console.log(err);
+				}
+				console.log('Added a new employee')
+				res.json({
+					message: 'success',
+					data: 'A new employee without a manager was added to the "employee" table'
+				});
+			}); 
+		} else {
+			const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`;
+			values.push(manager_id); 
+			console.log(sql);
+			pool.query(sql, values, (err, { rows }) => {
+				if (err) {
+					console.log(err);
+				}
+				console.log('Added a new employee')
+				res.json({
+					message: 'success',
+					data: 'A new employee with a manager was added to the "employee" table'
+				});
+			});
+		
+		};
+	} else {
+		res.status(500).json('Error in adding employee')
+	};
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
