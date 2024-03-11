@@ -77,6 +77,27 @@ app.get('/api/employees', (req, res) => {
   });
 });
 
+// Add Department
+app.post('/api/add-department', (req, res) => {
+	const {name} = req.body;
+	console.log(name);
+
+	if (name) {
+		pool.query(`INSERT INTO department (name) VALUES ($1)`, [name], (err, { rows }) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log('Added a new department')
+			res.json({
+				message: 'success',
+				data: 'A new department was added to the "department" table'
+			});
+		});
+	} else {
+		res.status(500).json('Error in adding department')
+	};
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
