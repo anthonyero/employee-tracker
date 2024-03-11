@@ -11,6 +11,11 @@ const validateNonEmpty = (promptName) => {
 
 const viewDepartments = () => {
 	console.log(`Made it to viewDepartments`);
+	fetch('http://localhost:3001/api/departments', {
+    	method: 'GET'
+ 	 })
+	   .then((res) => res.json())
+	   .then((data) => console.info(data));
 };
 
 const viewRoles = () => {
