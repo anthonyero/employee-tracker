@@ -38,3 +38,4 @@ VALUES	('Andrew', 'Warhol', 1, NULL),
 
 	-- Triple join
 		-- SELECT employee.first_name, employee.last_name, role.title, department.name FROM employee JOIN role ON role.id = employee.role_id JOIN department ON department.id = role.department_id; 
+		-- SELECT employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department", role.salary AS "Salary", employee.manager_id AS "Manager ID" FROM employee JOIN role ON role.id = employee.role_id JOIN department ON department.id = role.department_id; 

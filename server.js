@@ -27,7 +27,6 @@ app.get('/', (req, res) =>
 );
 
 // View Departments
-
 app.get('/api/departments', (req, res) => {
   const sql = `SELECT * FROM department`;
 
@@ -45,7 +44,6 @@ app.get('/api/departments', (req, res) => {
 });
 
 // View Roles
-
 app.get('/api/roles', (req, res) => {
   const sql = `SELECT role.title AS "Job Title", role.id AS "Role ID", role.salary AS "Salary", department.name AS "Department" FROM role JOIN department ON department.id = role.department_id;`;
 
@@ -62,6 +60,22 @@ app.get('/api/roles', (req, res) => {
   });
 });
 
+// View Employeees
+app.get('/api/employees', (req, res) => {
+  const sql = `SELECT employee.id AS "Employee ID", employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department", role.salary AS "Salary", employee.manager_id AS "Manager ID" FROM employee JOIN role ON role.id = employee.role_id JOIN department ON department.id = role.department_id;`;
+
+  pool.query(sql, (err, { rows }) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    console.log(rows)
+    res.json({
+      message: 'success',
+      data: rows
+    });
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
