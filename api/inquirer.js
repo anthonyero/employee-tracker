@@ -79,7 +79,7 @@ const viewEmployees = () => {
 
 const addDepartment = () => {
 	console.log(`Made it to addDepartment`);
-	inquirer.prompt(addDepartmentQuestion)
+	inquirer.prompt(addRoleQuestions)
 	.then((response) => {
 		const newDepartment = response.newDepartment;
 		const sql = `INSERT INTO department (name) VALUES ($1)`
@@ -99,6 +99,22 @@ const addDepartment = () => {
 
 const addRole = () => {
 	console.log(`Made it to addRole`);
+
+	inquirer.prompt(addRoleQuestions)
+	.then((response) => {
+		const { newJobTitle, newJobSalary, newJobDepartment } = response;
+		const sql = `INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)`
+
+		pool.query(sql, [newJobTitle, newJobSalary, newJobDepartment], (err, {rows}) => {
+  		if (err) {
+  			console.info(`${err.message}`);
+  			return;
+  		}
+  		console.info(`A new role, ${newJobTitle}, was successfully added`);
+  		runInquirer(commandQuestion);
+  	});
+	})
+
 };
 
 const addEmployee = () => {
@@ -176,6 +192,46 @@ const addDepartmentQuestion = [
 		}
 	}
 ];
+
+const addRoleQuestions = [
+	{
+		type: "input",
+		message: "Job title of the new role:",
+		name: "newJobTitle",
+		validate: function (newJobTitle) {
+			if (newJobTitle && newJobTitle.length <= 30) {
+				return true;
+			} else {
+				throw new Error("Please provide a response with fewer than 30 characters")
+			}
+		}
+	}, 
+	{
+		type: "number",
+		message: "Salary of the new role:",
+		name: "newJobSalary",
+		validate: function (newJobSalary) {
+			if (newJobSalary) {
+				return true;
+			} else {
+				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
+			}
+		}
+	},
+	{
+		type: "number",
+		message: "Department ID of the new role:",
+		name: "newJobDepartment",
+		validate: function (newJobDepartment) {
+			if (newJobDepartment) {
+				return true;
+			} else {
+				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
+			}
+		}
+	}
+];
+
 
 
 // Initialization function
