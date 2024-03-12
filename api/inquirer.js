@@ -30,14 +30,22 @@ const viewDepartments = () => {
  	 })
 	   .then((res) => res.json())
 	   .then((data) => console.info(data)); */
-	const sql = `SELECT * FROM department`;
+	const sql = `SELECT department.id, department.name AS "Department Name" FROM department`;
 
-  	pool.query(sql)
-  	//.then((response) => response)
-  	.then( ({rows}) => {
+  	pool.query(sql, (err, {rows}) => {
+  		if (err) {
+  			console.info(`${err.message}`);
+  			return;
+  		}
   		console.table(rows);
   		runInquirer(commandQuestion);
   	});
+
+  
+  	// .then( ({rows}) => {
+  	// 	console.table(rows);
+  	// 	runInquirer(commandQuestion);
+  	// });
 
 };
 
@@ -65,6 +73,11 @@ const updateEmployeeRole = () => {
 	console.log(`Made it to updateEmployeeRole`);
 };
 
+const exitCommand = () => {
+	console.log("To confirm your exit, press 'ctrl + c'");
+	return;
+}
+
 const switchCommand = (commandObject) => {
 	switch (commandObject.command) {
 		case "View all departments":
@@ -88,6 +101,9 @@ const switchCommand = (commandObject) => {
 		case "Update an employee role":
 			updateEmployeeRole();
 			break;
+		case "Exit":
+			exitCommand();
+			break;
 	};
 };
 
@@ -104,7 +120,8 @@ const commandQuestion = [
 			"Add a department",
 			"Add a role",
 			"Add an employee",
-			"Update an employee role"],
+			"Update an employee role",
+			"Exit"],
 		validate: validateNonEmpty("command")
 	}
 ];
@@ -115,7 +132,7 @@ const runInquirer = (questionList) => {
 	inquirer
 	.prompt(questionList)
 	.then((response) => {
-		console.log(response);
+		console.log(response); // Remove once testing complete
 		switchCommand(response);
 	})
 
