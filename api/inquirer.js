@@ -30,7 +30,7 @@ const viewDepartments = () => {
  	 })
 	   .then((res) => res.json())
 	   .then((data) => console.info(data)); */
-	const sql = `SELECT department.id, department.name AS "Department Name" FROM department`;
+	const sql = `SELECT department.name AS "Department Name", department.id AS "Department ID" FROM department`;
 
   	pool.query(sql, (err, {rows}) => {
   		if (err) {
@@ -51,7 +51,7 @@ const viewDepartments = () => {
 
 const viewRoles = () => {
 	console.log(`Made it to viewRoles`);
-	const sql = `SELECT role.title AS "Job Title", role.id AS "Role ID", role.salary AS "Salary", department.name AS "Department" FROM role JOIN department ON department.id = role.department_id;`;
+	const sql = `SELECT role.title AS "Job Title", role.id AS "Role ID", department.name AS "Department", role.salary AS "Salary" FROM role JOIN department ON department.id = role.department_id;`;
 
   	pool.query(sql, (err, {rows}) => {
   		if (err) {
