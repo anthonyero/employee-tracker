@@ -79,6 +79,22 @@ const viewEmployees = () => {
 
 const addDepartment = () => {
 	console.log(`Made it to addDepartment`);
+	inquirer.prompt(addDepartmentQuestion)
+	.then((response) => {
+		const newDepartment = response.newDepartment;
+		const sql = `INSERT INTO department (name) VALUES ($1)`
+
+		pool.query(sql, [newDepartment], (err, {rows}) => {
+  		if (err) {
+  			console.info(`${err.message}`);
+  			return;
+  		}
+  		console.info(`A new department, ${newDepartment}, was successfully added`);
+  		//viewDepartments(); Helpful for reference but may clutter view
+  		runInquirer(commandQuestion);
+  	});
+	})
+
 };
 
 const addRole = () => {
@@ -143,6 +159,21 @@ const commandQuestion = [
 			"Update an employee role",
 			"Exit"],
 		validate: validateNonEmpty("command")
+	}
+];
+
+const addDepartmentQuestion = [
+	{
+		type: "input",
+		message: "Name of the new department:",
+		name: "newDepartment",
+		validate: function (newDepartment) {
+			if (newDepartment && newDepartment.length <= 30) {
+				return true;
+			} else {
+				throw new Error("Please provide a response with fewer than 30 characters")
+			}
+		}
 	}
 ];
 
