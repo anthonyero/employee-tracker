@@ -51,6 +51,16 @@ const viewDepartments = () => {
 
 const viewRoles = () => {
 	console.log(`Made it to viewRoles`);
+	const sql = `SELECT role.title AS "Job Title", role.id AS "Role ID", role.salary AS "Salary", department.name AS "Department" FROM role JOIN department ON department.id = role.department_id;`;
+
+  	pool.query(sql, (err, {rows}) => {
+  		if (err) {
+  			console.info(`${err.message}`);
+  			return;
+  		}
+  		console.table(rows);
+  		runInquirer(commandQuestion);
+  	});
 };
 
 const viewEmployees = () => {
