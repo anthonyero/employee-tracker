@@ -362,7 +362,7 @@ const runInquirer = (questionList) => {
 	})
 };
 
-runInquirer(commandQuestion);
+// runInquirer(commandQuestion);
 
 module.exports = {
 	commandQuestion,
