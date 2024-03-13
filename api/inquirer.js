@@ -66,7 +66,7 @@ const addDepartment = () => {
   		console.info(`A new department, ${newDepartment}, was successfully added`);
   		//viewDepartments(); Helpful for reference but may clutter view
   		runInquirer(commandQuestion);
-  	});
+  		});
 	})
 
 };
