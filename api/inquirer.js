@@ -25,13 +25,6 @@ pool.connect();
 // Functions
 
 const viewDepartments = () => {
-	console.log(`Made it to viewDepartments`);
-	/*
-	fetch('http://localhost:3001/api/departments', {
-    	method: 'GET'
- 	 })
-	   .then((res) => res.json())
-	   .then((data) => console.info(data)); */
 	const sql = `SELECT department.name AS "Department Name", department.id AS "Department ID" FROM department`;
 
   	pool.query(sql, (err, {rows}) => {
@@ -43,16 +36,9 @@ const viewDepartments = () => {
   		runInquirer(commandQuestion);
   	});
 
-  
-  	// .then( ({rows}) => {
-  	// 	console.table(rows);
-  	// 	runInquirer(commandQuestion);
-  	// });
-
 };
 
 const viewRoles = () => {
-	console.log(`Made it to viewRoles`);
 	const sql = `SELECT role.title AS "Job Title", role.id AS "Role ID", department.name AS "Department", role.salary AS "Salary" FROM role JOIN department ON department.id = role.department_id;`;
 
   	pool.query(sql, (err, {rows}) => {
@@ -66,7 +52,6 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
-	console.log(`Made it to viewEmployees`);
 	const sql = `SELECT employee.id AS "Employee ID", employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department", role.salary AS "Salary", employee.manager_id AS "Manager ID" FROM employee JOIN role ON role.id = employee.role_id JOIN department ON department.id = role.department_id;`;
   	
   	pool.query(sql, (err, {rows}) => {
@@ -80,7 +65,6 @@ const viewEmployees = () => {
 };
 
 const addDepartment = () => {
-	console.log(`Made it to addDepartment`);
 	inquirer.prompt(addDepartmentQuestion)
 	.then((response) => {
 		const newDepartment = response.newDepartment;
@@ -100,8 +84,6 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
-	console.log(`Made it to addRole`);
-
 	inquirer.prompt(addRoleQuestions)
 	.then((response) => {
 		const { newJobTitle, newJobSalary, newJobDepartment } = response;
@@ -120,7 +102,6 @@ const addRole = () => {
 };
 
 const addEmployee = () => {
-	console.log(`Made it to addEmployee`);
 	inquirer.prompt(addEmployeeQuestions)
 	.then((response) => {
 		const {newFirstName, newLastName, newEmpRole, newEmpManager} = response;
@@ -150,7 +131,6 @@ const addEmployee = () => {
 };
 
 const updateEmployeeRole = () => {
-	console.log(`Made it to updateEmployeeRole`);
 	inquirer.prompt(updateRoleQuestions)
 	.then((response) => {
 		const {employeeID, roleID} = response;
@@ -203,19 +183,15 @@ const switchCommand = (commandObject) => {
 };
 
 
-
-
 // Initialization function
 const runInquirer = (questionList) => {
 	inquirer
 	.prompt(questionList)
 	.then((response) => {
-		console.log(response); // Remove once testing complete
 		switchCommand(response);
 	})
 };
 
-// runInquirer(commandQuestion);
 
 module.exports = {
 	commandQuestion,
