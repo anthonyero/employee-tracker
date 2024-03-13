@@ -24,6 +24,7 @@ pool.connect();
 
 // Functions
 
+	// View Functions
 const viewQuery = (sql) => {
 	pool.query(sql, (err, {rows}) => {
   		if (err) {
@@ -34,7 +35,6 @@ const viewQuery = (sql) => {
   		runInquirer(commandQuestion);
   	});
 }
-
 
 const viewDepartments = () => {
 	const sql = `SELECT department.name AS "Department Name", department.id AS "Department ID" FROM department`;
@@ -51,6 +51,7 @@ const viewEmployees = () => {
     viewQuery(sql);
 };
 
+	// Add Functions
 const addDepartment = () => {
 	inquirer.prompt(addDepartmentQuestion)
 	.then((response) => {
@@ -117,6 +118,7 @@ const addEmployee = () => {
 	})
 };
 
+	// Update Function 
 const updateEmployeeRole = () => {
 	inquirer.prompt(updateRoleQuestions)
 	.then((response) => {
