@@ -112,7 +112,7 @@ const addRole = () => {
   		}
   		console.info(`A new role, ${newJobTitle}, was successfully added`);
   		runInquirer(commandQuestion);
-  	});
+  		});
 	})
 
 };
@@ -149,7 +149,22 @@ const addEmployee = () => {
 
 const updateEmployeeRole = () => {
 	console.log(`Made it to updateEmployeeRole`);
+	inquirer.prompt(updateRoleQuestions)
+	.then((response) => {
+		const {employeeID, roleID} = response;
+
+		const sql = `UPDATE employee SET role_id = $1 WHERE id = $2`;
+		pool.query(sql, [roleID, employeeID], (err, {rows}) => {
+			if (err) {
+				console.info(`${err.message}`);
+				return;
+			}
+		console.info(`Employee ${employeeID}'s role was successfully updated to ${roleID}`);
+		runInquirer(commandQuestion);
+		});
+	})
 };
+
 
 const exitCommand = () => {
 	console.log("To confirm your exit, press 'ctrl + c'");
@@ -198,7 +213,7 @@ const commandQuestion = [
 			"Add a department",
 			"Add a role",
 			"Add an employee",
-			"Update an employee role",
+			"Update an employee's role",
 			"Exit"],
 		validate: validateNonEmpty("command")
 	}
@@ -307,7 +322,35 @@ const addEmployeeQuestions = [
 			}
 		}
 	}
-]
+];
+
+const updateRoleQuestions = [
+	{
+		type: "number",
+		message: "Employee ID:",
+		name: "employeeID",
+		validate: function (employeeID) {
+			if (employeeID) {
+				return true;
+			} else {
+				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
+			}
+		}
+	},
+	{
+		type: "number",
+		message: "New role ID:",
+		name: "roleID",
+		validate: function (roleID) {
+			if (roleID) {
+				return true;
+			} else {
+				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
+			}
+		}
+	}
+];
+
 
 // Initialization function
 const runInquirer = (questionList) => {
@@ -317,8 +360,7 @@ const runInquirer = (questionList) => {
 		console.log(response); // Remove once testing complete
 		switchCommand(response);
 	})
-
-}
+};
 
 runInquirer(commandQuestion);
 
