@@ -1,4 +1,13 @@
 const inquirer = require('inquirer');
+const {
+	validateNonEmpty,
+	commandQuestion,
+	addDepartmentQuestion,
+	addRoleQuestions,
+	addEmployeeQuestions,
+	updateRoleQuestions
+} = require('./questions.js')
+
 const {Pool} = require('pg');
 
 const pool = new Pool(
@@ -14,25 +23,10 @@ const pool = new Pool(
 pool.connect();
 
 // Functions
-const validateNonEmpty = (promptName) => {
-	if (promptName) {
-		return true;
-	} else {
-		throw new Error(`Please select a ${promptName}`);
-	}
-};
 
-const viewDepartments = () => {
-	console.log(`Made it to viewDepartments`);
-	/*
-	fetch('http://localhost:3001/api/departments', {
-    	method: 'GET'
- 	 })
-	   .then((res) => res.json())
-	   .then((data) => console.info(data)); */
-	const sql = `SELECT department.name AS "Department Name", department.id AS "Department ID" FROM department`;
-
-  	pool.query(sql, (err, {rows}) => {
+	// View Functions
+const viewQuery = (sql) => {
+	pool.query(sql, (err, {rows}) => {
   		if (err) {
   			console.info(`${err.message}`);
   			return;
@@ -40,45 +34,25 @@ const viewDepartments = () => {
   		console.table(rows);
   		runInquirer(commandQuestion);
   	});
+}
 
-  
-  	// .then( ({rows}) => {
-  	// 	console.table(rows);
-  	// 	runInquirer(commandQuestion);
-  	// });
-
+const viewDepartments = () => {
+	const sql = `SELECT department.name AS "Department Name", department.id AS "Department ID" FROM department`;
+	viewQuery(sql);
 };
 
 const viewRoles = () => {
-	console.log(`Made it to viewRoles`);
 	const sql = `SELECT role.title AS "Job Title", role.id AS "Role ID", department.name AS "Department", role.salary AS "Salary" FROM role JOIN department ON department.id = role.department_id;`;
-
-  	pool.query(sql, (err, {rows}) => {
-  		if (err) {
-  			console.info(`${err.message}`);
-  			return;
-  		}
-  		console.table(rows);
-  		runInquirer(commandQuestion);
-  	});
+  	viewQuery(sql);
 };
 
 const viewEmployees = () => {
-	console.log(`Made it to viewEmployees`);
 	const sql = `SELECT employee.id AS "Employee ID", employee.first_name AS "First Name", employee.last_name AS "Last Name", role.title AS "Job Title", department.name AS "Department", role.salary AS "Salary", employee.manager_id AS "Manager ID" FROM employee JOIN role ON role.id = employee.role_id JOIN department ON department.id = role.department_id;`;
-  	
-  	pool.query(sql, (err, {rows}) => {
-  		if (err) {
-  			console.info(`${err.message}`);
-  			return;
-  		}
-  		console.table(rows);
-  		runInquirer(commandQuestion);
-  	});
+    viewQuery(sql);
 };
 
+	// Add Functions
 const addDepartment = () => {
-	console.log(`Made it to addDepartment`);
 	inquirer.prompt(addDepartmentQuestion)
 	.then((response) => {
 		const newDepartment = response.newDepartment;
@@ -92,14 +66,12 @@ const addDepartment = () => {
   		console.info(`A new department, ${newDepartment}, was successfully added`);
   		//viewDepartments(); Helpful for reference but may clutter view
   		runInquirer(commandQuestion);
-  	});
+  		});
 	})
 
 };
 
 const addRole = () => {
-	console.log(`Made it to addRole`);
-
 	inquirer.prompt(addRoleQuestions)
 	.then((response) => {
 		const { newJobTitle, newJobSalary, newJobDepartment } = response;
@@ -118,7 +90,6 @@ const addRole = () => {
 };
 
 const addEmployee = () => {
-	console.log(`Made it to addEmployee`);
 	inquirer.prompt(addEmployeeQuestions)
 	.then((response) => {
 		const {newFirstName, newLastName, newEmpRole, newEmpManager} = response;
@@ -147,8 +118,8 @@ const addEmployee = () => {
 	})
 };
 
+	// Update Function 
 const updateEmployeeRole = () => {
-	console.log(`Made it to updateEmployeeRole`);
 	inquirer.prompt(updateRoleQuestions)
 	.then((response) => {
 		const {employeeID, roleID} = response;
@@ -200,169 +171,16 @@ const switchCommand = (commandObject) => {
 	};
 };
 
-// Command Question
-const commandQuestion = [
-	{
-		type: "list",
-		message: "Please provide a command:",
-		name: "command",
-		choices: [
-			"View all departments",
-			"View all roles",
-			"View all employees",
-			"Add a department",
-			"Add a role",
-			"Add an employee",
-			"Update an employee's role",
-			"Exit"],
-		validate: validateNonEmpty("command")
-	}
-];
-
-const addDepartmentQuestion = [
-	{
-		type: "input",
-		message: "Name of the new department:",
-		name: "newDepartment",
-		validate: function (newDepartment) {
-			if (newDepartment && newDepartment.length <= 30) {
-				return true;
-			} else {
-				throw new Error("Please provide a response with fewer than 30 characters")
-			}
-		}
-	}
-];
-
-const addRoleQuestions = [
-	{
-		type: "input",
-		message: "Job title of the new role:",
-		name: "newJobTitle",
-		validate: function (newJobTitle) {
-			if (newJobTitle && newJobTitle.length <= 30) {
-				return true;
-			} else {
-				throw new Error("Please provide a response with fewer than 30 characters")
-			}
-		}
-	}, 
-	{
-		type: "number",
-		message: "Salary of the new role:",
-		name: "newJobSalary",
-		validate: function (newJobSalary) {
-			if (newJobSalary) {
-				return true;
-			} else {
-				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
-			}
-		}
-	},
-	{
-		type: "number",
-		message: "Department ID of the new role:",
-		name: "newJobDepartment",
-		validate: function (newJobDepartment) {
-			if (newJobDepartment) {
-				return true;
-			} else {
-				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
-			}
-		}
-	}
-];
-
-const addEmployeeQuestions = [
-	{
-		type: "input",
-		message: "New employee's first name:",
-		name: "newFirstName",
-		validate: function (newFirstName) {
-			if (newFirstName && newFirstName.length <= 30) {
-				return true;
-			} else {
-				throw new Error("Please provide a response with fewer than 30 characters")
-			}
-		}
-	},
-	{
-		type: "input",
-		message: "New employee's last name:",
-		name: "newLastName",
-		validate: function (newLastName) {
-			if (newLastName && newLastName.length <= 30) {
-				return true;
-			} else {
-				throw new Error("Please provide a response with fewer than 30 characters")
-			}
-		}
-	},
-	{
-		type: "number",
-		message: "Role ID of the new employee:",
-		name: "newEmpRole",
-		validate: function (newEmpRole) {
-			if (newEmpRole) {
-				return true;
-			} else {
-				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
-			}
-		}
-	},
-	{
-		type: "number",
-		message: "Manager ID of the new employee. If no manager, enter -99:",
-		name: "newEmpManager",
-		validate: function (newEmpManager) {
-			if (newEmpManager) {
-				return true;
-			} else {
-				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
-			}
-		}
-	}
-];
-
-const updateRoleQuestions = [
-	{
-		type: "number",
-		message: "Employee ID:",
-		name: "employeeID",
-		validate: function (employeeID) {
-			if (employeeID) {
-				return true;
-			} else {
-				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
-			}
-		}
-	},
-	{
-		type: "number",
-		message: "New role ID:",
-		name: "roleID",
-		validate: function (roleID) {
-			if (roleID) {
-				return true;
-			} else {
-				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
-			}
-		}
-	}
-];
-
 
 // Initialization function
 const runInquirer = (questionList) => {
 	inquirer
 	.prompt(questionList)
 	.then((response) => {
-		console.log(response); // Remove once testing complete
 		switchCommand(response);
 	})
 };
 
-// runInquirer(commandQuestion);
 
 module.exports = {
 	commandQuestion,
