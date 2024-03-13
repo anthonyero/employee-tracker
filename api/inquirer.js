@@ -79,7 +79,7 @@ const viewEmployees = () => {
 
 const addDepartment = () => {
 	console.log(`Made it to addDepartment`);
-	inquirer.prompt(addRoleQuestions)
+	inquirer.prompt(addDepartmentQuestion)
 	.then((response) => {
 		const newDepartment = response.newDepartment;
 		const sql = `INSERT INTO department (name) VALUES ($1)`
