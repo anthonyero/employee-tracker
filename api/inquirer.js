@@ -191,7 +191,7 @@ const switchCommand = (commandObject) => {
 		case "Add an employee":
 			addEmployee();
 			break;
-		case "Update an employee role":
+		case "Update an employee's role":
 			updateEmployeeRole();
 			break;
 		case "Exit":
