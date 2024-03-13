@@ -119,6 +119,32 @@ const addRole = () => {
 
 const addEmployee = () => {
 	console.log(`Made it to addEmployee`);
+	inquirer.prompt(addEmployeeQuestions)
+	.then((response) => {
+		const {newFirstName, newLastName, newEmpRole, newEmpManager} = response;
+		// If manager is null, we want to use NULL in SQL
+		if (newEmpManager === -99) {
+			const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, NULL)`;
+			pool.query(sql, [newFirstName, newLastName, newEmpRole], (err, {rows}) => {
+				if (err) {
+					console.info(`${err.message}`);
+					return;
+				}
+				console.info(`A new employee, ${newFirstName} ${newLastName}, was successfully added`);
+				runInquirer(commandQuestion);
+			});
+		} else {
+			const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`;
+			pool.query(sql, [newFirstName, newLastName, newEmpRole, newEmpManager], (err, {rows}) => {
+				if (err) {
+					console.info(`${err.message}`);
+					return;
+				}
+				console.info(`A new employee, ${newFirstName} ${newLastName}, was successfully added`);
+				runInquirer(commandQuestion);
+			});
+		};
+	})
 };
 
 const updateEmployeeRole = () => {
@@ -232,7 +258,56 @@ const addRoleQuestions = [
 	}
 ];
 
-
+const addEmployeeQuestions = [
+	{
+		type: "input",
+		message: "New employee's first name:",
+		name: "newFirstName",
+		validate: function (newFirstName) {
+			if (newFirstName && newFirstName.length <= 30) {
+				return true;
+			} else {
+				throw new Error("Please provide a response with fewer than 30 characters")
+			}
+		}
+	},
+	{
+		type: "input",
+		message: "New employee's last name:",
+		name: "newLastName",
+		validate: function (newLastName) {
+			if (newLastName && newLastName.length <= 30) {
+				return true;
+			} else {
+				throw new Error("Please provide a response with fewer than 30 characters")
+			}
+		}
+	},
+	{
+		type: "number",
+		message: "Role ID of the new employee:",
+		name: "newEmpRole",
+		validate: function (newEmpRole) {
+			if (newEmpRole) {
+				return true;
+			} else {
+				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
+			}
+		}
+	},
+	{
+		type: "number",
+		message: "Manager ID of the new employee. If no manager, enter -99:",
+		name: "newEmpManager",
+		validate: function (newEmpManager) {
+			if (newEmpManager) {
+				return true;
+			} else {
+				throw new Error("Please provide a response a numeric response. Press the up arrow and backspace to adjust your response")
+			}
+		}
+	}
+]
 
 // Initialization function
 const runInquirer = (questionList) => {
